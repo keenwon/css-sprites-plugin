@@ -14,6 +14,12 @@ module.exports = () => {
     },
     mode: 'development',
     devtool: 'none',
+    resolve: {
+      alias: {
+        '@page1': path.resolve(__dirname, './files/page1'),
+        '@page2': path.resolve(__dirname, './files/page2')
+      }
+    },
     plugins: [
       new MiniCssExtractPlugin({
         filename: '[name].css'

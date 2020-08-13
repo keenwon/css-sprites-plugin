@@ -12,7 +12,7 @@
 .div6 {
   width: 96px;
   height: 64px;
-  background: url('./image6@2x.png?__sprite') no-repeat;
+  background: url('~@page2/image6@2x.png?__sprite') no-repeat;
   background-size: cover;
 }
 
