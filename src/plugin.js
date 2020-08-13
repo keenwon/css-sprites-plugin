@@ -75,7 +75,7 @@ function getSize (item, total) {
  * 生成文件
  */
 
-function emitFile (image, outputPath, name = 'sprite.[contenthash:6].png') {
+function emitFile (image, outputPath, name) {
   const spriteFileName = loaderUtils.interpolateName({}, name, {
     content: image
   })
@@ -89,8 +89,44 @@ function emitFile (image, outputPath, name = 'sprite.[contenthash:6].png') {
   return spriteFileName
 }
 
+/**
+ * 默认配置
+ */
+const defaultOptions = {
+  /**
+   * sprite 图片 name
+   */
+  name: 'sprite.[contenthash:6].png',
+
+  /**
+   * 过滤模式，支持 query 和 all
+   * query 模式下只将 url 带指定 params 的图片，合并入 sprite
+   */
+  filter: 'all',
+  params: '__sprite',
+
+  /**
+   * 限制文件大小，文件 < limit 才会合入 sprite
+   */
+  limit: 8 * 1024,
+
+  /**
+   * Spritesmith algorithm
+   */
+  algorithm: 'binary-tree',
+
+  /**
+   * Spritesmith padding
+   */
+  padding: 5
+}
+
 class CssSpritesPlugin {
-  constructor () {
+  constructor (options) {
+    this.options = Object.assign({}, defaultOptions, options)
+
+    debug('options: %o', this.options)
+
     // 输出路径
     this.outputPath = ''
 
@@ -138,6 +174,7 @@ class CssSpritesPlugin {
   }
 
   run (compilation, assetName, asset) {
+    const options = this.options
     const content = asset.source()
     const outputPath = this.outputPath
 
@@ -181,7 +218,7 @@ class CssSpritesPlugin {
         /**
          * 生成文件
          */
-        const spriteFileName = emitFile(result.image, outputPath)
+        const spriteFileName = emitFile(result.image, outputPath, options.name)
 
         /**
          * 修改 css
@@ -229,8 +266,8 @@ class CssSpritesPlugin {
 
       Spritesmith.run({
         src: imageUrls,
-        algorithm: 'binary-tree',
-        padding: 5
+        algorithm: this.options.algorithm,
+        padding: this.options.padding
       }, handleSpritesmithResult)
     })
   }
