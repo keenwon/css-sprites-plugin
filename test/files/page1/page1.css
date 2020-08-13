@@ -1,0 +1,35 @@
+.div {
+  margin: 40px;
+  border: 2px solid #666;
+}
+
+.div1 {
+  width: 192px;
+  height: 128px;
+}
+
+.div1 .image {
+  width: 192px;
+  height: 128px;
+}
+
+.div1 .image {
+  background-image: url('./image1.png?__sprite');
+}
+
+.div2 {
+  width: 96px;
+  height: 64px;
+}
+
+.div2 .image {
+  width: 96px;
+  height: 64px;
+  background-image: url('./image2.png?__sprite');
+}
+
+.div3 {
+  width: 48px;
+  height: 32px;
+  background-image: url('./image3.png?__sprite');
+}

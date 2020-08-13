@@ -1,0 +1,24 @@
+.div {
+  margin: 40px;
+  border: 2px solid #666;
+}
+
+.div5 {
+  width: 72px;
+  height: 48px;
+  background: url('./image5.png?__sprite') no-repeat;
+}
+
+.div6 {
+  width: 96px;
+  height: 64px;
+  background: url('./image6@2x.png?__sprite') no-repeat;
+  background-size: cover;
+}
+
+.div7 {
+  width: 192px;
+  height: 128px;
+  background: url('./image7@3x.png?__sprite') no-repeat;
+  background-size: cover;
+}

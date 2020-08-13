@@ -1,0 +1,41 @@
+{
+  "name": "css-sprites-plugin",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "elint lint \"**/*.js\" --fix",
+    "test": "npm run lint && DEBUG=css-sprites-plugin jest",
+    "beforecommit": "npm run lint && elint lint commit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keenwon/css-sprites-loader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/keenwon/css-sprites-loader/issues"
+  },
+  "homepage": "https://github.com/keenwon/css-sprites-loader#readme",
+  "devDependencies": {
+    "css-loader": "^3.4.1",
+    "debug": "^4.1.1",
+    "elint": "^2.0.0-alpha.3",
+    "elint-preset-kw": "^1.9.0",
+    "html-webpack-plugin": "^4.3.0",
+    "jest": "^26.1.0",
+    "memory-fs": "^0.5.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "webpack": "^4.41.5"
+  },
+  "dependencies": {
+    "css": "^2.2.4",
+    "file-loader": "^6.0.0",
+    "fs-extra": "^9.0.1",
+    "loader-utils": "^2.0.0",
+    "spritesmith": "^3.4.0",
+    "webpack-sources": "^1.4.3"
+  }
+}
