@@ -9,7 +9,8 @@ module.exports = () => {
     entry: './files/entry.js',
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: 'bundle.js'
+      filename: 'bundle.js',
+      publicPath: '//p1.music.126.net/test/'
     },
     mode: 'development',
     devtool: 'none',

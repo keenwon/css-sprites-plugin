@@ -10,18 +10,6 @@ const pluginName = 'CssSpritesPlugin'
 const URL_REG = /url\(['"]?(.+?\.(png|jpg|jpeg|gif))(.*)['"]?\)/i
 
 /**
- * 是否是网络图片
- */
-
-function isNetworkImg (value) {
-  if (!value || typeof value !== 'string') {
-    return false
-  }
-
-  return /^(\/\/|http|https).+?/.test(value)
-}
-
-/**
  * 从 ast 中提取 image url
  */
 
@@ -48,11 +36,6 @@ function getImageRulsFromAst (ast, outputPath) {
 
       const imageFilePath = matched[1]
       const absoluteUrl = path.join(outputPath, imageFilePath)
-
-      //  网络图片不处理
-      if (isNetworkImg(matched && matched[1])) {
-        return
-      }
 
       debug(`css sprite loader: ${imageFilePath}`)
 
@@ -101,7 +84,7 @@ function emitFile (image, outputPath, name = 'sprite.[contenthash:6].png') {
 
   fs.outputFileSync(absolutePath, image)
 
-  debug(`sprite file absolute path: ${absolutePath}`)
+  debug(`emit sprite file: ${absolutePath}`)
 
   return spriteFileName
 }
@@ -210,7 +193,7 @@ class CssSpritesPlugin {
             x, y, width: imageWidth, height: imageHeight
           } = result.coordinates[rawUrl]
 
-          const newImagePath = path.join(path.dirname(imageFilePath), spriteFileName)
+          const newImagePath = `${path.dirname(imageFilePath)}/${spriteFileName}`
 
           declaration.value = declaration.value.replace(/url\(.+?\)/i, `url(${newImagePath})`)
 
