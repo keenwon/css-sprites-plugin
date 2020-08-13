@@ -47,3 +47,39 @@ module.exports = {
   }
 }
 ```
+
+## Options
+
+```js
+/**
+ * 默认配置
+ */
+const defaultOptions = {
+  /**
+   * sprite 图片 name
+   */
+  name: 'sprite.[contenthash:6].png',
+
+  /**
+   * 过滤模式，支持 query 和 all
+   * query 模式下只将 url 带指定 params 的图片，合并入 sprite
+   */
+  filter: 'all',
+  params: '__sprite',
+
+  /**
+   * 限制文件大小，文件 < limit 才会合入 sprite
+   */
+  limit: 8 * 1024,
+
+  /**
+   * Spritesmith algorithm
+   */
+  algorithm: 'binary-tree',
+
+  /**
+   * Spritesmith padding
+   */
+  padding: 5
+}
+```

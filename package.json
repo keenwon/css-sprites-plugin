@@ -1,6 +1,6 @@
 {
   "name": "css-sprites-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/keenwon/css-sprites-loader.git"
+    "url": "git+https://github.com/keenwon/css-sprites-plugin.git"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/keenwon/css-sprites-loader/issues"
+    "url": "https://github.com/keenwon/css-sprites-plugin/issues"
   },
-  "homepage": "https://github.com/keenwon/css-sprites-loader#readme",
+  "homepage": "https://github.com/keenwon/css-sprites-plugin#readme",
   "devDependencies": {
     "css-loader": "^3.4.1",
     "debug": "^4.1.1",
