@@ -52,6 +52,9 @@ class CssSpritesPlugin {
 
     // 原始图片信息
     this.rawImagesInfo = {}
+
+    // 全部 asset
+    this.assets = {}
   }
 
   registerImageInfo (name, info) {
@@ -68,6 +71,8 @@ class CssSpritesPlugin {
       })
 
       compilation.hooks.optimizeAssets.tapPromise(pluginName, () => {
+        this.assets = compilation.assets
+
         return this.sprite(compilation)
       })
     })
@@ -201,6 +206,9 @@ class CssSpritesPlugin {
       rule.declarations.forEach((declaration) => {
         const { property, value } = declaration
 
+        /**
+         * CSS 属性过滤
+         */
         if (property !== 'background' && property !== 'background-image') {
           return
         }
@@ -211,10 +219,24 @@ class CssSpritesPlugin {
           return
         }
 
+        /**
+         * options.filter 过滤
+         */
+        if (this.options.filter === 'query' && value.includes(this.options.params)) {
+          return
+        }
+
         const imageFilePath = matched[1]
         const absoluteUrl = path.join(this.outputPath, imageFilePath)
 
-        debug(`css sprite loader: ${imageFilePath}`)
+        /**
+         * 根据文件大小过滤
+         */
+        if (this.assets[path.basename(imageFilePath)].size() >= this.options.limit) {
+          return
+        }
+
+        debug(`css sprite plugin: ${imageFilePath}`)
 
         rules.push({
           imageFilePath,
