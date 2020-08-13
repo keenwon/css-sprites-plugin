@@ -10,86 +10,6 @@ const pluginName = 'CssSpritesPlugin'
 const URL_REG = /url\(['"]?(.+?\.(png|jpg|jpeg|gif))(.*)['"]?\)/i
 
 /**
- * 从 ast 中提取 image url
- */
-
-function getImageRulsFromAst (ast, outputPath) {
-  const rules = []
-
-  ast.stylesheet.rules.forEach((rule) => {
-    if (!rule.declarations) {
-      return
-    }
-
-    rule.declarations.forEach((declaration) => {
-      const { property, value } = declaration
-
-      if (property !== 'background' && property !== 'background-image') {
-        return
-      }
-
-      const matched = value.match(URL_REG)
-
-      if (!matched || !matched[1]) {
-        return
-      }
-
-      const imageFilePath = matched[1]
-      const absoluteUrl = path.join(outputPath, imageFilePath)
-
-      debug(`css sprite loader: ${imageFilePath}`)
-
-      rules.push({
-        imageFilePath,
-        absoluteUrl,
-        declaration,
-        rule
-      })
-    })
-  })
-
-  return rules
-}
-
-/**
- * background-position 转换
- */
-
-function getPosition (num, item, total) {
-  if (!num) {
-    return '0%'
-  }
-
-  return `${(-num / (item - total) * 100).toFixed(4)}%`
-}
-
-/**
- * background-size 转换
- */
-
-function getSize (item, total) {
-  return `${(total / item * 100).toFixed(4)}%`
-}
-
-/**
- * 生成文件
- */
-
-function emitFile (image, outputPath, name) {
-  const spriteFileName = loaderUtils.interpolateName({}, name, {
-    content: image
-  })
-
-  const absolutePath = path.join(outputPath, spriteFileName)
-
-  fs.outputFileSync(absolutePath, image)
-
-  debug(`emit sprite file: ${absolutePath}`)
-
-  return spriteFileName
-}
-
-/**
  * 默认配置
  */
 const defaultOptions = {
@@ -132,8 +52,6 @@ class CssSpritesPlugin {
 
     // 原始图片信息
     this.rawImagesInfo = {}
-
-    this.registerImageInfo = this.registerImageInfo.bind(this)
   }
 
   registerImageInfo (name, info) {
@@ -146,7 +64,7 @@ class CssSpritesPlugin {
     compiler.hooks.compilation.tap(pluginName, compilation => {
       // 注册方法给 loader 使用
       compilation.hooks.normalModuleLoader.tap(pluginName, context => {
-        context.cspRegisterImageInfo = this.registerImageInfo
+        context.cspRegisterImageInfo = this.registerImageInfo.bind(this)
       })
 
       compilation.hooks.optimizeAssets.tapPromise(pluginName, () => {
@@ -157,11 +75,9 @@ class CssSpritesPlugin {
 
   sprite (compilation) {
     const assetNames = Object.keys(compilation.assets)
-
     debug('assetNames: %o', assetNames)
 
     const cssAssetNames = assetNames.filter(name => /\.css$/.test(name))
-
     debug('cssAssetNames: %o', cssAssetNames)
 
     if (!cssAssetNames.length) {
@@ -174,9 +90,7 @@ class CssSpritesPlugin {
   }
 
   run (compilation, assetName, asset) {
-    const options = this.options
     const content = asset.source()
-    const outputPath = this.outputPath
 
     const ast = css.parse(content)
 
@@ -186,7 +100,7 @@ class CssSpritesPlugin {
     }
 
     // 筛选出 image 相关的 rules
-    const imageRules = getImageRulsFromAst(ast, outputPath).map(item => {
+    const imageRules = this.getImageRulsFromAst(ast).map(item => {
       const imageFileName = path.basename(item.imageFilePath)
       const rawUrl = this.rawImagesInfo[imageFileName].resourcePath
 
@@ -218,7 +132,7 @@ class CssSpritesPlugin {
         /**
          * 生成文件
          */
-        const spriteFileName = emitFile(result.image, outputPath, options.name)
+        const spriteFileName = this.emitFile(result.image)
 
         /**
          * 修改 css
@@ -234,10 +148,10 @@ class CssSpritesPlugin {
 
           declaration.value = declaration.value.replace(/url\(.+?\)/i, `url(${newImagePath})`)
 
-          const positionX = getPosition(x, imageWidth, width)
-          const positionY = getPosition(y, imageHeight, height)
-          const sizeX = getSize(imageWidth, width)
-          const sizeY = getSize(imageHeight, height)
+          const positionX = this.getBackgroundPosition(x, imageWidth, width)
+          const positionY = this.getBackgroundPosition(y, imageHeight, height)
+          const sizeX = this.getBackgroundSize(imageWidth, width)
+          const sizeY = this.getBackgroundSize(imageHeight, height)
 
           const newRules = [
             {
@@ -268,8 +182,88 @@ class CssSpritesPlugin {
         src: imageUrls,
         algorithm: this.options.algorithm,
         padding: this.options.padding
-      }, handleSpritesmithResult)
+      }, handleSpritesmithResult.bind(this))
     })
+  }
+
+  /**
+   * 从 ast 中提取 image url
+   */
+
+  getImageRulsFromAst (ast) {
+    const rules = []
+
+    ast.stylesheet.rules.forEach((rule) => {
+      if (!rule.declarations) {
+        return
+      }
+
+      rule.declarations.forEach((declaration) => {
+        const { property, value } = declaration
+
+        if (property !== 'background' && property !== 'background-image') {
+          return
+        }
+
+        const matched = value.match(URL_REG)
+
+        if (!matched || !matched[1]) {
+          return
+        }
+
+        const imageFilePath = matched[1]
+        const absoluteUrl = path.join(this.outputPath, imageFilePath)
+
+        debug(`css sprite loader: ${imageFilePath}`)
+
+        rules.push({
+          imageFilePath,
+          absoluteUrl,
+          declaration,
+          rule
+        })
+      })
+    })
+
+    return rules
+  }
+
+  /**
+   * background-position 转换
+   */
+
+  getBackgroundPosition (num, item, total) {
+    if (!num) {
+      return '0%'
+    }
+
+    return `${(-num / (item - total) * 100).toFixed(4)}%`
+  }
+
+  /**
+   * background-size 转换
+   */
+
+  getBackgroundSize (item, total) {
+    return `${(total / item * 100).toFixed(4)}%`
+  }
+
+  /**
+   * 生成文件
+   */
+
+  emitFile (image) {
+    const spriteFileName = loaderUtils.interpolateName({}, this.options.name, {
+      content: image
+    })
+
+    const absolutePath = path.join(this.outputPath, spriteFileName)
+
+    fs.outputFileSync(absolutePath, image)
+
+    debug(`emit sprite file: ${absolutePath}`)
+
+    return spriteFileName
   }
 }
 
