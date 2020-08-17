@@ -2,18 +2,23 @@ const fs = require('fs-extra')
 const path = require('path')
 const compiler = require('./compiler.js')
 
-beforeEach(async () => {
-  const distPath = path.join(__dirname, 'dist')
+const cleanDir = async (index) => {
+  const distPath = path.join(__dirname, `dist${index}`)
   await fs.remove(distPath)
-})
+}
 
 // 动态输入 option 进行测试
 const options = [
-  {}
+  {},
+  {
+    filter: 'query'
+  }
 ]
 
 options.map((option, index) => {
   test(`test${index}`, async () => {
+    await cleanDir(index)
+
     const stats = await compiler(option, index)
     const { errors } = stats.toJson()
 

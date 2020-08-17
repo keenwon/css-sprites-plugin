@@ -42,7 +42,7 @@ const defaultOptions = {
 }
 
 class CssSpritesPlugin {
-  constructor (options) {
+  constructor (options = {}) {
     this.options = Object.assign({}, defaultOptions, options)
 
     debug('options: %o', this.options)
@@ -57,8 +57,8 @@ class CssSpritesPlugin {
     this.assets = {}
   }
 
-  registerImageInfo (name, info) {
-    this.rawImagesInfo[name] = info
+  registerImageInfo (hashName, info) {
+    this.rawImagesInfo[hashName] = info
   }
 
   apply (compiler) {
@@ -114,8 +114,6 @@ class CssSpritesPlugin {
     const imageUrls = imageRules
       .map(item => item.rawUrl)
       .filter(item => !!item)
-
-    debug(`${assetName} image urls: %o`, imageUrls)
 
     if (!imageUrls.length) {
       debug(`${assetName}: no image, exit`)
@@ -195,15 +193,24 @@ class CssSpritesPlugin {
         return
       }
 
+      const imageFilePath = matched[1]
+      const imageFileName = path.basename(imageFilePath)
+      const resourceQuery = this.rawImagesInfo[imageFileName].resourceQuery
+      const absoluteUrl = path.join(this.outputPath, imageFilePath)
+
+      debug({
+        imageFilePath,
+        imageFileName,
+        resourceQuery,
+        absoluteUrl
+      })
+
       /**
        * options.filter 过滤
        */
-      if (this.options.filter === 'query' && value.includes(this.options.params)) {
+      if (this.options.filter === 'query' && !resourceQuery.includes(this.options.params)) {
         return
       }
-
-      const imageFilePath = matched[1]
-      const absoluteUrl = path.join(this.outputPath, imageFilePath)
 
       /**
        * 根据文件大小过滤
