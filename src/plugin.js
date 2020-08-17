@@ -1,7 +1,7 @@
 const debug = require('debug')('css-sprites-plugin')
 const fs = require('fs-extra')
 const path = require('path')
-const css = require('css')
+const postcss = require('postcss')
 const Spritesmith = require('spritesmith')
 const webpackSources = require('webpack-sources')
 const loaderUtils = require('loader-utils')
@@ -97,12 +97,7 @@ class CssSpritesPlugin {
   run (compilation, assetName, asset) {
     const content = asset.source()
 
-    const ast = css.parse(content)
-
-    if (!ast.stylesheet.rules) {
-      debug(`${assetName}: no rules`)
-      return Promise.resolve()
-    }
+    const ast = postcss.parse(content)
 
     // 筛选出 image 相关的 rules
     const imageRules = this.getImageRulsFromAst(ast).map(item => {
@@ -144,7 +139,7 @@ class CssSpritesPlugin {
          */
         const { width, height } = result.properties
 
-        imageRules.forEach(({ rawUrl, imageFilePath, declaration, rule }) => {
+        imageRules.forEach(({ rawUrl, imageFilePath, declaration }) => {
           const {
             x, y, width: imageWidth, height: imageHeight
           } = result.coordinates[rawUrl]
@@ -158,25 +153,18 @@ class CssSpritesPlugin {
           const sizeX = this.getBackgroundSize(imageWidth, width)
           const sizeY = this.getBackgroundSize(imageHeight, height)
 
-          const newRules = [
-            {
-              type: 'declaration',
-              property: 'background-position',
-              value: `${positionX} ${positionY}`
-            },
-            {
-              type: 'declaration',
-              property: 'background-size',
-              value: `${sizeX} ${sizeY}`
-            }
-          ]
+          declaration.cloneAfter({
+            prop: 'background-position',
+            value: `${positionX} ${positionY}`
+          })
 
-          debug(`new rules ${rawUrl}: %O`, newRules)
-
-          rule.declarations.push(...newRules)
+          declaration.cloneAfter({
+            prop: 'background-size',
+            value: `${sizeX} ${sizeY}`
+          })
         })
 
-        const newContent = css.stringify(ast)
+        const newContent = ast.toString()
 
         compilation.assets[assetName] = new webpackSources.RawSource(newContent)
 
@@ -198,52 +186,38 @@ class CssSpritesPlugin {
   getImageRulsFromAst (ast) {
     const rules = []
 
-    ast.stylesheet.rules.forEach((rule) => {
-      if (!rule.declarations) {
+    ast.walkDecls(/^background(-image)?$/, declaration => {
+      const { value } = declaration
+
+      const matched = value.match(URL_REG)
+
+      if (!matched || !matched[1]) {
         return
       }
 
-      rule.declarations.forEach((declaration) => {
-        const { property, value } = declaration
+      /**
+       * options.filter 过滤
+       */
+      if (this.options.filter === 'query' && value.includes(this.options.params)) {
+        return
+      }
 
-        /**
-         * CSS 属性过滤
-         */
-        if (property !== 'background' && property !== 'background-image') {
-          return
-        }
+      const imageFilePath = matched[1]
+      const absoluteUrl = path.join(this.outputPath, imageFilePath)
 
-        const matched = value.match(URL_REG)
+      /**
+       * 根据文件大小过滤
+       */
+      if (this.assets[path.basename(imageFilePath)].size() >= this.options.limit) {
+        return
+      }
 
-        if (!matched || !matched[1]) {
-          return
-        }
+      debug(`css sprite plugin: ${imageFilePath}`)
 
-        /**
-         * options.filter 过滤
-         */
-        if (this.options.filter === 'query' && value.includes(this.options.params)) {
-          return
-        }
-
-        const imageFilePath = matched[1]
-        const absoluteUrl = path.join(this.outputPath, imageFilePath)
-
-        /**
-         * 根据文件大小过滤
-         */
-        if (this.assets[path.basename(imageFilePath)].size() >= this.options.limit) {
-          return
-        }
-
-        debug(`css sprite plugin: ${imageFilePath}`)
-
-        rules.push({
-          imageFilePath,
-          absoluteUrl,
-          declaration,
-          rule
-        })
+      rules.push({
+        imageFilePath,
+        absoluteUrl,
+        declaration
       })
     })
 
