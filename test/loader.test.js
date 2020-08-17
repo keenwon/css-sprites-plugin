@@ -11,7 +11,7 @@ const cleanDir = async (index) => {
 const options = [
   {},
   {
-    filter: 'query'
+    filter: true
   }
 ]
 

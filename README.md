@@ -61,10 +61,10 @@ const defaultOptions = {
   name: 'sprite.[contenthash:6].png',
 
   /**
-   * 过滤模式，支持 query 和 all
-   * query 模式下只将 url 带指定 params 的图片，合并入 sprite
+   * 是否开启过滤模式
+   * 开启后只将 url 带指定 params 的图片，合并入 sprite
    */
-  filter: 'all',
+  filter: false,
   params: '__sprite',
 
   /**
