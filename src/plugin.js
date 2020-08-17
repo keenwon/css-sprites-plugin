@@ -103,8 +103,6 @@ class CssSpritesPlugin {
     const rules = this.getImageRulsFromAst(ast)
     const imageRules = this.processRules(rules)
 
-    debug('image rules: %o', imageRules)
-
     // 所有 image url
     const imageUrls = imageRules
       .map(item => item.rawImageInfo.resourcePath)
@@ -150,14 +148,19 @@ class CssSpritesPlugin {
 
           declaration.value = declaration.value.replace(/url\(.+?\)/i, `url(${newImagePath})`)
 
+          // 删除现有的 css 属性
+          declaration.parent.walkDecls(/^background-(position|size)$/, decl => {
+            decl.remove()
+          })
+
           declaration.cloneAfter({
             prop: 'background-position',
-            value: `${positionX} ${positionY} !important`
+            value: `${positionX} ${positionY}`
           })
 
           declaration.cloneAfter({
             prop: 'background-size',
-            value: `${sizeX} ${sizeY} !important`
+            value: `${sizeX} ${sizeY}`
           })
 
           // 删除原有的图片
