@@ -7,13 +7,20 @@ beforeEach(async () => {
   await fs.remove(distPath)
 })
 
-test('test', async () => {
-  const stats = await compiler()
-  const { errors } = stats.toJson()
+// 动态输入 option 进行测试
+const options = [
+  {}
+]
 
-  if (errors.length) {
-    console.error(errors.join(''))
-  }
+options.map((option, index) => {
+  test(`test${index}`, async () => {
+    const stats = await compiler(option, index)
+    const { errors } = stats.toJson()
 
-  expect(errors.length).toBe(0)
+    if (errors.length) {
+      console.error(errors.join(''))
+    }
+
+    expect(errors.length).toBe(0)
+  })
 })

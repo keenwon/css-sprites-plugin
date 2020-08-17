@@ -34,4 +34,4 @@ coverage
 # nightwatch
 test/e2e/screenshots
 
-test/dist/
+test/dist*

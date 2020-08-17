@@ -3,12 +3,12 @@ const webpack = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssSpritesPlugin = require('../index')
 
-module.exports = () => {
+module.exports = (option, index) => {
   const compiler = webpack({
     context: __dirname,
     entry: './files/entry.js',
     output: {
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, `dist${index}`),
       filename: 'bundle.js',
       publicPath: '//p1.music.126.net/test/'
     },
@@ -24,7 +24,7 @@ module.exports = () => {
       new MiniCssExtractPlugin({
         filename: '[name].css'
       }),
-      new CssSpritesPlugin()
+      new CssSpritesPlugin(option)
     ],
     module: {
       rules: [
