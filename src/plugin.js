@@ -79,7 +79,7 @@ class CssSpritesPlugin {
   }
 
   sprite (compilation) {
-    const assetNames = Object.keys(compilation.assets)
+    const assetNames = Object.keys(this.assets)
     debug('assetNames: %o', assetNames)
 
     const cssAssetNames = assetNames.filter(name => /\.css$/.test(name))
@@ -90,7 +90,7 @@ class CssSpritesPlugin {
     }
 
     return Promise.all(cssAssetNames.map(name => {
-      return this.run(compilation, name, compilation.assets[name])
+      return this.run(compilation, name, this.assets[name])
     }))
   }
 
@@ -100,19 +100,14 @@ class CssSpritesPlugin {
     const ast = postcss.parse(content)
 
     // 筛选出 image 相关的 rules
-    const imageRules = this.getImageRulsFromAst(ast).map(item => {
-      const imageFileName = path.basename(item.imageFilePath)
-      const rawUrl = this.rawImagesInfo[imageFileName].resourcePath
+    const rules = this.getImageRulsFromAst(ast)
+    const imageRules = this.processRules(rules)
 
-      return {
-        ...item,
-        rawUrl
-      }
-    })
+    debug('image rules: %o', imageRules)
 
     // 所有 image url
     const imageUrls = imageRules
-      .map(item => item.rawUrl)
+      .map(item => item.rawImageInfo.resourcePath)
       .filter(item => !!item)
 
     if (!imageUrls.length) {
@@ -137,19 +132,23 @@ class CssSpritesPlugin {
          */
         const { width, height } = result.properties
 
-        imageRules.forEach(({ rawUrl, imageFilePath, declaration }) => {
+        imageRules.forEach(({
+          rawImageInfo,
+          imageFilePath,
+          imageFileName,
+          declaration
+        }) => {
           const {
             x, y, width: imageWidth, height: imageHeight
-          } = result.coordinates[rawUrl]
+          } = result.coordinates[rawImageInfo.resourcePath]
 
-          const newImagePath = `${path.dirname(imageFilePath)}/${spriteFileName}`
-
-          declaration.value = declaration.value.replace(/url\(.+?\)/i, `url(${newImagePath})`)
-
+          const newImagePath = path.join(path.dirname(imageFilePath), spriteFileName)
           const positionX = this.getBackgroundPosition(x, imageWidth, width)
           const positionY = this.getBackgroundPosition(y, imageHeight, height)
           const sizeX = this.getBackgroundSize(imageWidth, width)
           const sizeY = this.getBackgroundSize(imageHeight, height)
+
+          declaration.value = declaration.value.replace(/url\(.+?\)/i, `url(${newImagePath})`)
 
           declaration.cloneAfter({
             prop: 'background-position',
@@ -160,10 +159,14 @@ class CssSpritesPlugin {
             prop: 'background-size',
             value: `${sizeX} ${sizeY}`
           })
+
+          // 删除原有的图片
+          delete compilation.assets[imageFileName]
         })
 
         const newContent = ast.toString()
 
+        // 更新 css 文件
         compilation.assets[assetName] = new webpackSources.RawSource(newContent)
 
         resolve()
@@ -194,32 +197,7 @@ class CssSpritesPlugin {
       }
 
       const imageFilePath = matched[1]
-      const imageFileName = path.basename(imageFilePath)
-      const resourceQuery = this.rawImagesInfo[imageFileName].resourceQuery
       const absoluteUrl = path.join(this.outputPath, imageFilePath)
-
-      debug({
-        imageFilePath,
-        imageFileName,
-        resourceQuery,
-        absoluteUrl
-      })
-
-      /**
-       * options.filter 过滤
-       */
-      if (this.options.filter && !resourceQuery.includes(this.options.params)) {
-        return
-      }
-
-      /**
-       * 根据文件大小过滤
-       */
-      if (this.assets[path.basename(imageFilePath)].size() >= this.options.limit) {
-        return
-      }
-
-      debug(`css sprite plugin: ${imageFilePath}`)
 
       rules.push({
         imageFilePath,
@@ -229,6 +207,48 @@ class CssSpritesPlugin {
     })
 
     return rules
+  }
+
+  /**
+   * 过滤并预处理 rules
+   */
+
+  processRules (rules) {
+    const imageRules = []
+    const { filter, params, limit } = this.options
+
+    rules.forEach(rule => {
+      const imageFileName = path.basename(rule.imageFilePath)
+      const rawImageInfo = this.rawImagesInfo[imageFileName]
+      const asset = this.assets[imageFileName]
+
+      // 仅处理 loader 采集过的 image
+      if (!rawImageInfo || !asset) {
+        return
+      }
+
+      /**
+       * options.filter 过滤
+       */
+      if (filter && !rawImageInfo.resourceQuery.includes(params)) {
+        return
+      }
+
+      /**
+       * 根据文件大小过滤
+       */
+      if (asset.size() >= limit) {
+        return
+      }
+
+      imageRules.push({
+        ...rule,
+        imageFileName,
+        rawImageInfo
+      })
+    })
+
+    return imageRules
   }
 
   /**
