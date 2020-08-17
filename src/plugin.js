@@ -208,7 +208,7 @@ class CssSpritesPlugin {
       /**
        * options.filter 过滤
        */
-      if (this.options.filter === 'query' && !resourceQuery.includes(this.options.params)) {
+      if (this.options.filter && !resourceQuery.includes(this.options.params)) {
         return
       }
 

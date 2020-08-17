@@ -9,9 +9,27 @@ const cleanDir = async (index) => {
 
 // 动态输入 option 进行测试
 const options = [
+  // 默认配置
   {},
+
+  // 开启 filter
   {
     filter: true
+  },
+
+  // 不限制图片大小
+  {
+    limit: Number.MAX_SAFE_INTEGER
+  },
+
+  // 自定义文件名
+  {
+    name: 'sprite.[contenthash].png'
+  },
+
+  // 自定义 Spritesmith 配置
+  {
+    padding: 50
   }
 ]
 
