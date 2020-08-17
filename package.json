@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "elint lint \"**/*.js\" --fix",
-    "test": "npm run lint && DEBUG=css-sprites-plugin jest",
-    "beforecommit": "npm run lint && elint lint commit"
+    "test": "npm run test:lint && npm run test:unit",
+    "test:lint": "elint lint \"**/*.js\" --fix",
+    "test:unit": "DEBUG=css-sprites-plugin jest",
+    "beforecommit": "npm run test:lint && elint lint commit"
   },
   "repository": {
     "type": "git",
@@ -31,10 +32,10 @@
     "webpack": "^4.41.5"
   },
   "dependencies": {
-    "css": "^2.2.4",
     "file-loader": "^6.0.0",
     "fs-extra": "^9.0.1",
     "loader-utils": "^2.0.0",
+    "postcss": "^7.0.32",
     "spritesmith": "^3.4.0",
     "webpack-sources": "^1.4.3"
   }
