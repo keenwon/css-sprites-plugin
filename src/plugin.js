@@ -110,8 +110,8 @@ class CssSpritesPlugin {
       .map(item => item.rawImageInfo.resourcePath)
       .filter(item => !!item)
 
-    if (!imageUrls.length) {
-      debug(`${assetName}: no image, exit`)
+    if (!Array.isArray(imageUrls) || imageUrls.length <= 1) {
+      debug(`${assetName}: 图片数 <= 1，不执行`)
       return Promise.resolve()
     }
 
