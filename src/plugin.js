@@ -263,10 +263,10 @@ class CssSpritesPlugin {
 
   getBackgroundPosition (num, item, total) {
     if (!num) {
-      return '0%'
+      return '0'
     }
 
-    return `${(-num / (item - total) * 100).toFixed(4)}%`
+    return `${parseFloat((-num / (item - total) * 100).toFixed(4))}%`
   }
 
   /**
@@ -274,7 +274,7 @@ class CssSpritesPlugin {
    */
 
   getBackgroundSize (item, total) {
-    return `${(total / item * 100).toFixed(4)}%`
+    return `${parseFloat((total / item * 100).toFixed(4))}%`
   }
 
   /**
