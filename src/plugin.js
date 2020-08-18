@@ -140,7 +140,7 @@ class CssSpritesPlugin {
             x, y, width: imageWidth, height: imageHeight
           } = result.coordinates[rawImageInfo.resourcePath]
 
-          const newImagePath = path.join(path.dirname(imageFilePath), spriteFileName)
+          const newImagePath = `${imageFilePath.substr(0, imageFilePath.lastIndexOf('/'))}/${spriteFileName}`
           const positionX = this.getBackgroundPosition(x, imageWidth, width)
           const positionY = this.getBackgroundPosition(y, imageHeight, height)
           const sizeX = this.getBackgroundSize(imageWidth, width)
