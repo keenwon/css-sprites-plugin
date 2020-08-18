@@ -70,7 +70,7 @@ const defaultOptions = {
   /**
    * 限制文件大小，文件 < limit 才会合入 sprite
    */
-  limit: 8 * 1024,
+  limit: 16 * 1024,
 
   /**
    * Spritesmith algorithm
