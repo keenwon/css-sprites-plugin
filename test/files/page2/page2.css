@@ -17,8 +17,8 @@
 }
 
 .div7 {
-  width: 192px;
-  height: 128px;
+  width: 300px;
+  height: 100px;
   /* 尺寸过大 */
   background: url('./image7@3x.png?__sprite') no-repeat;
   background-size: cover;
