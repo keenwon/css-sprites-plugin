@@ -80,14 +80,14 @@ class CssSpritesPlugin {
 
   sprite (compilation) {
     const assetNames = Object.keys(this.assets)
-    debug('assetNames: %o', assetNames)
 
     const cssAssetNames = assetNames.filter(name => /\.css$/.test(name))
-    debug('cssAssetNames: %o', cssAssetNames)
 
     if (!cssAssetNames.length) {
       return Promise.resolve()
     }
+
+    debug('cssAssetNames: %o', cssAssetNames)
 
     return Promise.all(cssAssetNames.map(name => {
       return this.run(compilation, name, this.assets[name])
@@ -171,6 +171,9 @@ class CssSpritesPlugin {
 
         // 更新 css 文件
         compilation.assets[assetName] = new webpackSources.RawSource(newContent)
+
+        // 添加 sprite 图到 asset
+        compilation.assets[spriteFileName] = new webpackSources.RawSource(result.image)
 
         resolve()
       }
