@@ -202,6 +202,12 @@ class CssSpritesPlugin {
         return
       }
 
+      // 不处理 repeat 的图片，暂时简单处理
+      const content = declaration.parent.toString()
+      if (content.includes('repeat') && !content.includes('no-repeat')) {
+        return
+      }
+
       const imageFilePath = matched[1]
       const absoluteUrl = path.join(this.outputPath, imageFilePath)
 
