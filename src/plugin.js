@@ -202,8 +202,10 @@ class CssSpritesPlugin {
         return
       }
 
-      // 不处理 repeat 的图片，暂时简单处理
+      // 不处理 repeat 的图片
       const content = declaration.parent.toString()
+
+      // 暂时简单处理，当 css 里存在 repeat，但不是 no-repeat 的时候，不合入 sprite
       if (content.includes('repeat') && !content.includes('no-repeat')) {
         return
       }
