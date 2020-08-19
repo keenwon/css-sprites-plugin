@@ -140,7 +140,7 @@ class CssSpritesPlugin {
             x, y, width: imageWidth, height: imageHeight
           } = result.coordinates[rawImageInfo.resourcePath]
 
-          const newImagePath = `${imageFilePath.substr(0, imageFilePath.lastIndexOf('/'))}/${spriteFileName}`
+          const newImagePath = this.replaceSpriteImage(imageFilePath, spriteFileName)
           const positionX = this.getBackgroundPosition(x, imageWidth, width)
           const positionY = this.getBackgroundPosition(y, imageHeight, height)
           const sizeX = this.getBackgroundSize(imageWidth, width)
@@ -261,6 +261,19 @@ class CssSpritesPlugin {
     })
 
     return imageRules
+  }
+
+  /**
+   * 用 sprite 图片替换原有图片
+   */
+
+  replaceSpriteImage (imageFilePath, spriteFileName) {
+    if (!imageFilePath.includes('/')) {
+      return spriteFileName
+    }
+
+    // 拼接新的 path
+    return `${imageFilePath.substr(0, imageFilePath.lastIndexOf('/'))}/${spriteFileName}`
   }
 
   /**
