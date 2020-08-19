@@ -5,4 +5,4 @@
   import('./page2/page2.js')
 })();
 
-console.log(entry)
+console.log('entry')

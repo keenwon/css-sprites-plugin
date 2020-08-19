@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssSpritesPlugin = require('../index')
 
@@ -9,8 +10,7 @@ module.exports = (option, index) => {
     entry: './files/entry.js',
     output: {
       path: path.resolve(__dirname, `dist${index}`),
-      filename: 'bundle.js',
-      publicPath: '//p1.music.126.net/test/'
+      filename: 'bundle.js'
     },
     mode: 'development',
     devtool: 'none',
@@ -21,6 +21,9 @@ module.exports = (option, index) => {
       }
     },
     plugins: [
+      new HtmlWebpackPlugin({
+        template: './files/index.ejs'
+      }),
       new MiniCssExtractPlugin({
         filename: '[name].css'
       }),

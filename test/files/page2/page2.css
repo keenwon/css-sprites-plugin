@@ -1,5 +1,6 @@
 .div {
-  margin: 40px;
+  margin: 10px;
+  float: left;
   border: 2px solid #666;
 }
 
@@ -16,10 +17,19 @@
   background-size: cover;
 }
 
+/* 测试图片尺寸过大的情况 */
 .div7 {
   width: 300px;
   height: 100px;
-  /* 尺寸过大 */
   background: url('./image7@3x.png?__sprite') no-repeat;
   background-size: cover;
+}
+
+/* repeat 不处理 */
+.div8 {
+  width: 192px;
+  height: 64px;
+  background: url('./image8@2x.png?__sprite');
+  background-size: contain;
+  background-repeat: repeat-x;
 }
