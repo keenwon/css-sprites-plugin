@@ -1,5 +1,9 @@
 # CSS Sprites Plugin
 
+[![NPM version][npm-image]][npm-url]
+[![Build Status][github-actions-image]][github-actions-url]
+[![License][license-image]][license-url]
+
 ## Install
 
 ```shell
@@ -83,3 +87,14 @@ const defaultOptions = {
   padding: 5
 }
 ```
+
+## License
+
+MIT.
+
+[npm-image]: https://img.shields.io/npm/v/css-sprites-plugin.svg?maxAge=3600
+[npm-url]: https://www.npmjs.com/package/css-sprites-plugin
+[github-actions-image]: https://github.com/keenwon/css-sprites-plugin/workflows/unittest/badge.svg
+[github-actions-url]: https://github.com/keenwon/css-sprites-plugin/actions
+[license-image]: https://img.shields.io/npm/l/css-sprites-plugin.svg?maxAge=3600
+[license-url]: https://github.com/keenwon/css-sprites-plugin/blob/master/LICENSE
