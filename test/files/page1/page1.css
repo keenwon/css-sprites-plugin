@@ -21,3 +21,10 @@
   height: 32px;
   background-image: url('./image3.png?__sprite');
 }
+
+/* 同一张图片引用两次 */
+.div3_2 {
+  width: 48px;
+  height: 32px;
+  background-image: url('./image3_2.png?__sprite');
+}
