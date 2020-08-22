@@ -2,7 +2,8 @@ const fs = require('fs-extra')
 const path = require('path')
 const compiler = require('./compiler.js')
 
-jest.setTimeout(10 * 1000)
+// 超时时间加长，因为有个大图片
+jest.setTimeout(30 * 1000)
 
 const cleanDir = async (index) => {
   const distPath = path.join(__dirname, `dist${index}`)
