@@ -5,6 +5,7 @@ const postcss = require('postcss')
 const Spritesmith = require('spritesmith')
 const webpackSources = require('webpack-sources')
 const loaderUtils = require('loader-utils')
+const _ = require('lodash')
 
 const pluginName = 'CssSpritesPlugin'
 const URL_REG = /url\(['"]?(.+?\.(png|jpg|jpeg|gif))(.*)['"]?\)/i
@@ -104,9 +105,9 @@ class CssSpritesPlugin {
     const imageRules = this.processRules(rules)
 
     // 所有 image url
-    const imageUrls = imageRules
+    const imageUrls = _.uniq(imageRules
       .map(item => item.rawImageInfo.resourcePath)
-      .filter(item => !!item)
+      .filter(item => !!item))
 
     if (!Array.isArray(imageUrls) || imageUrls.length <= 1) {
       debug(`${assetName}: 图片数 <= 1，不执行`)
