@@ -2,6 +2,8 @@ const fs = require('fs-extra')
 const path = require('path')
 const compiler = require('./compiler.js')
 
+jest.setTimeout(10 * 1000)
+
 const cleanDir = async (index) => {
   const distPath = path.join(__dirname, `dist${index}`)
   await fs.remove(distPath)
