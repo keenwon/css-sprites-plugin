@@ -156,12 +156,12 @@ class CssSpritesPlugin {
 
           declaration.cloneAfter({
             prop: 'background-position',
-            value: `${positionX} ${positionY}`
+            value: `${positionX} ${positionY} !important`
           })
 
           declaration.cloneAfter({
             prop: 'background-size',
-            value: `${sizeX} ${sizeY}`
+            value: `${sizeX} ${sizeY} !important`
           })
 
           // 删除原有的图片
