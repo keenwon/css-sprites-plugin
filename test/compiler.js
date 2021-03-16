@@ -13,7 +13,7 @@ module.exports = (option, index) => {
       filename: 'bundle.js'
     },
     mode: 'development',
-    devtool: 'none',
+    devtool: false,
     resolve: {
       alias: {
         '@page1': path.resolve(__dirname, './files/page1'),

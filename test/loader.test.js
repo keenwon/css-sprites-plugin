@@ -44,7 +44,7 @@ options.map((option, index) => {
     const { errors } = stats.toJson()
 
     if (errors.length) {
-      console.error(errors.join(''))
+      console.error(JSON.stringify(errors, null, '  '))
     }
 
     expect(errors.length).toBe(0)

@@ -3,6 +3,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const postcss = require('postcss')
 const Spritesmith = require('spritesmith')
+const webpack = require('webpack')
 const webpackSources = require('webpack-sources')
 const loaderUtils = require('loader-utils')
 const _ = require('lodash')
@@ -65,9 +66,17 @@ class CssSpritesPlugin {
   apply (compiler) {
     this.outputPath = compiler.options.output.path
 
+    const NormalModule = webpack.NormalModule
+      ? webpack.NormalModule
+      : require('webpack/lib/NormalModule')
+
     compiler.hooks.compilation.tap(pluginName, compilation => {
       // 注册方法给 loader 使用
-      compilation.hooks.normalModuleLoader.tap(pluginName, context => {
+      const normalModuleHook = typeof NormalModule.getCompilationHooks !== 'undefined'
+        ? NormalModule.getCompilationHooks(compilation).loader
+        : compilation.hooks.normalModuleLoader
+
+      normalModuleHook.tap(pluginName, context => {
         context.cspRegisterImageInfo = this.registerImageInfo.bind(this)
       })
 
