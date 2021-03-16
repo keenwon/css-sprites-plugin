@@ -10,6 +10,9 @@
 npm install css-sprites-plugin -D
 ```
 
+- webpack 4: css-sprites-plugin@1
+- webpack 5: css-sprites-plugin@5
+
 ## Usage
 
 ```js
